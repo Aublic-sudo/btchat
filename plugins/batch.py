@@ -202,7 +202,7 @@ async def prog(c, t, C, h, m, st):
         P[m] = step
         c_mb = c / (1024 * 1024)
         t_mb = t / (1024 * 1024)
-        bar = 'ðŸŸ¢' * int(p / 10) + 'ðŸ”´' * (10 - int(p / 10))
+        bar = '🟢' * int(p / 10) + '🔴' * (10 - int(p / 10))
         speed = c / (time.time() - st) / (1024 *
                                           1024) if time.time() > st else 0
         eta = time.strftime(
@@ -210,7 +210,7 @@ async def prog(c, t, C, h, m, st):
                 (t - c) / (speed * 1024 * 1024))) if speed > 0 else '00:00'
         await C.edit_message_text(
             h, m,
-            f"__**Pyro Handler...**__\n\n{bar}\n\nâš¡**__Completed__**: {c_mb:.2f} MB / {t_mb:.2f} MB\nðŸ“Š **__Done__**: {p:.2f}%\nðŸš€ **__Speed__**: {speed:.2f} MB/s\nâ³ **__ETA__**: {eta}\n\n**__Powered by @RixieHQ__**"
+            f"__**Pyro Handler...**__\n\n{bar}\n\n⚡**__Completed__**: {c_mb:.2f} MB / {t_mb:.2f} MB\n📊 **__Done__**: {p:.2f}%\n🚀 **__Speed__**: {speed:.2f} MB/s\n⏳ **__ETA__**: {eta}\n\n**__Powered by @RixieHQ__**"
         )
         if p >= 100: P.pop(m, None)
 
@@ -507,12 +507,12 @@ async def botchat_cmd(c, m):
 
     uc = await get_uclient(uid)
     if not uc:
-        await m.reply_text("âŒ Please login first using /login")
+        await m.reply_text("❌ Please login first using /login")
         return
 
     BOTCHAT_STATE[uid] = {"step": "select_bot"}
 
-    await m.reply_text("ðŸ¤– Send your bot username (the bot you want to use for upload)")
+    await m.reply_text("🤖 Send your bot username (the bot you want to use for upload)")
 
 @X.on_message(filters.text & filters.private & ~login_in_progress
               & ~filters.command([
@@ -533,28 +533,28 @@ async def text_handler(c, m):
     
             ubot = await get_ubot(uid)
             if not ubot:
-                await m.reply_text("âŒ Bot not set. Use /setbot first.")
+                await m.reply_text("❌ Bot not set. Use /setbot first.")
                 return
     
             state["bot"] = bot_username
             state["step"] = "limit"
     
-            await m.reply_text("ðŸ“Š Enter how many messages to fetch (example: 10)")
+            await m.reply_text("📊 Enter how many messages to fetch (example: 10)")
             return
     
         # STEP 2: get limit
         elif state["step"] == "limit":
             if not m.text.isdigit():
-                await m.reply_text("âŒ Enter a valid number")
+                await m.reply_text("❌ Enter a valid number")
                 return
     
             state["limit"] = int(m.text)
             state["step"] = "chat"
     
-            await m.reply_text("ðŸ“¥ Now send target chat username (example: Course_adminbot)")
+            await m.reply_text("📥 Now send target chat username (example: Course_adminbot)")
             return
     
-        # STEP 3: get chat + show messages (NEW â†’ OLD âœ…)
+        # STEP 3: get chat + show messages (NEW → OLD ✅)
         elif state["step"] == "chat":
             chat = m.text.strip()
             state["chat"] = chat
@@ -562,16 +562,16 @@ async def text_handler(c, m):
     
             uc = await get_uclient(uid)
     
-            text = "ðŸ“‹ **Recent Messages (Latest First):**\n\n"
+            text = "📋 **Recent Messages (Latest First):**\n\n"
     
             try:
                 async for msg in uc.get_chat_history(chat, limit=state["limit"]):
                     mtype = "None"
     
                     if msg.video:
-                        mtype = "VIDEO ðŸŽ¥"
+                        mtype = "VIDEO 🎥"
                     elif msg.document:
-                        mtype = "DOCUMENT ðŸ“"
+                        mtype = "DOCUMENT 📁"
     
                     caption = (
                         msg.caption.markdown
@@ -582,11 +582,11 @@ async def text_handler(c, m):
                     text += f"**ID:** `{msg.id}`\n**Type:** {mtype}\n**Caption:** {caption}\n\n------\n"
     
             except Exception:
-                await m.reply_text("âŒ Cannot access chat (join bot / check username)")
+                await m.reply_text("❌ Cannot access chat (join bot / check username)")
                 BOTCHAT_STATE.pop(uid, None)
                 return
     
-            await m.reply_text(text + "\nðŸ‘‰ Send IDs like: `123` or `123&124`")
+            await m.reply_text(text + "\n👉 Send IDs like: `123` or `123&124`")
             return
     
         # STEP 4: process IDs
@@ -596,13 +596,13 @@ async def text_handler(c, m):
             try:
                 ids = [int(x.strip()) for x in m.text.split("&")]
             except:
-                await m.reply_text("âŒ Invalid format. Use: 123 or 123&124")
+                await m.reply_text("❌ Invalid format. Use: 123 or 123&124")
                 return
     
             ubot = await get_ubot(uid)
             uc = await get_uclient(uid)
     
-            status = await m.reply_text(f"ðŸš€ Starting...\n0/{len(ids)}")
+            status = await m.reply_text(f"🚀 Starting...\n0/{len(ids)}")
     
             success = 0
     
@@ -634,7 +634,7 @@ async def text_handler(c, m):
     
                 await asyncio.sleep(1)
     
-            await m.reply_text(f"âœ… Completed: {success}/{len(ids)}")
+            await m.reply_text(f"✅ Completed: {success}/{len(ids)}")
     
             BOTCHAT_STATE.pop(uid, None)
             return
@@ -763,11 +763,8 @@ async def text_handler(c, m):
                 await asyncio.sleep(2)
 
             if j + 1 == n:
-                await m.reply_text(f'Batch Completed âœ… Success: {success}/{n}')
+                await m.reply_text(f'Batch Completed ✅ Success: {success}/{n}')
 
         finally:
             await remove_active_batch(uid)
-            Z.pop(uid, None)in BOTCHAT_STATE:
-        state = BOTCHAT_STATE[uid]
-    
-     
+            Z.pop(uid, None)
