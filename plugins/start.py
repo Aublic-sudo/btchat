@@ -1,3 +1,4 @@
+
 # Copyright (c) 2025 devgagan : https://github.com/devgaganin.  
 # Licensed under the GNU General Public License v3.0.  
 # See LICENSE file in the repository root for full license text.
@@ -48,8 +49,7 @@ async def set(_, message):
         BotCommand("terms", "🥺 Terms and conditions"),
         BotCommand("help", "❓ If you're a noob, still!"),
         BotCommand("cancel", "🚫 Cancel login/batch/settings process"),
-        BotCommand("stop", "🚫 Cancel batch process"),
-        BotCommand("botchat", "🚫 botchat batch process")
+        BotCommand("stop", "🚫 Cancel batch process")
     ])
  
     await message.reply("✅ Commands configured successfully!")
@@ -158,3 +158,5 @@ async def on_help_navigation(client, callback_query):
     await send_or_edit_help_page(client, callback_query.message, page_number)
      
     await callback_query.answer()
+
+ 
