@@ -2,7 +2,7 @@
 # Licensed under the GNU General Public License v3.0.
 # See LICENSE file in the repository root for full license text.
 
-import os, re, time, asyncio, json, asyncio
+import os, re, time, asyncio, json  # FIX 1: removed duplicate asyncio import
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import UserNotParticipant
@@ -292,22 +292,24 @@ async def process_msg(c, u, m, d, lt, uid, i):
             st = time.time()
             p = await c.send_message(d, 'Downloading...')
 
+            # FIX 2: c_name always updated to sanitize(file_name) whether file_name
+            # exists or not — previously c_name stayed as timestamp when file_name existed
             c_name = f"{time.time()}"
             if m.video:
                 file_name = m.video.file_name
                 if not file_name:
                     file_name = f"{time.time()}.mp4"
-                    c_name = sanitize(file_name)
+                c_name = sanitize(file_name)
             elif m.audio:
                 file_name = m.audio.file_name
                 if not file_name:
                     file_name = f"{time.time()}.mp3"
-                    c_name = sanitize(file_name)
+                c_name = sanitize(file_name)
             elif m.document:
                 file_name = m.document.file_name
                 if not file_name:
                     file_name = f"{time.time()}"
-                    c_name = sanitize(file_name)
+                c_name = sanitize(file_name)
             elif m.photo:
                 file_name = f"{time.time()}.jpg"
                 c_name = sanitize(file_name)
@@ -523,7 +525,6 @@ async def botchat_cmd(c, m):
 async def text_handler(c, m):
     uid = m.from_user.id
     # ================= BOTCHAT FLOW =================
-    # ================= BOTCHAT FLOW =================
     if uid in BOTCHAT_STATE:
         state = BOTCHAT_STATE[uid]
     
@@ -734,6 +735,8 @@ async def text_handler(c, m):
                 "progress_message_id": pt.id
             })
 
+        # FIX 3: guard against n=0 so 'j' is always defined after the loop
+        completed = False
         try:
             for j in range(n):
 
@@ -762,7 +765,11 @@ async def text_handler(c, m):
 
                 await asyncio.sleep(2)
 
-            if j + 1 == n:
+            else:
+                # for/else: runs only when loop finishes without break (not cancelled)
+                completed = True
+
+            if completed:
                 await m.reply_text(f'Batch Completed ✅ Success: {success}/{n}')
 
         finally:
