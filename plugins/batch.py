@@ -613,7 +613,7 @@ async def text_handler(c, m):
     
                     if msg:
                         res = await process_msg(
-                            ubot,
+                            c,
                             uc,
                             msg,
                             str(m.chat.id),
